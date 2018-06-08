@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Calculator V.2</title>
+
+	<style type="text/css">
+		input {
+			width: 100%;
+		}
+	</style>
+</head>
+<body onkeypress="return keyPressed(event)">
+	<form id="calc">
+		<table>
+			<tr>
+				<td colspan="3"><input type="text" id="T1" readonly></td>
+			</tr>
+			<tr>
+				<td colspan="3"><input type="text" id="T2" readonly></td>
+			</tr>
+			<tr>
+				<td colspan="3"><input type="button" id="toggle" value="Scientific" onclick="toggleVersion(this.value)"></td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="button" id="clear" value="C" onclick="clearScreen()"></td>
+				<td><input type="button" id="mC" value="MC" onclick="memManiuplation(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="mr" value="MR" onclick="memStore()"></td>
+				<td><input type="button" id="m+" value="M+" onclick="memManiuplation(this)"></td>
+				<td><input type="button" id="m-" value="M-" onclick="memManiuplation(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="one" value="1" onclick="enterValue(this)"></td>
+				<td><input type="button" id="two" value="2" onclick="enterValue(this)"></td>
+				<td><input type="button" id="three" value="3" onclick="enterValue(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="four" value="4" onclick="enterValue(this)"></td>
+				<td><input type="button" id="five" value="5" onclick="enterValue(this)"></td>
+				<td><input type="button" id="six" value="6" onclick="enterValue(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="seven" value="7" onclick="enterValue(this)"></td>
+				<td><input type="button" id="eight" value="8" onclick="enterValue(this)"></td>
+				<td><input type="button" id="nine" value="9" onclick="enterValue(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="add" value="+" onclick="operator(this)"></td>
+				<td><input type="button" id="zero" value="0" onclick="enterValue(this)"></td>
+				<td><input type="button" id="subtract" value="-" onclick="operator(this)"></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="multiply" value="x" onclick="operator(this)"></td>
+				<td><input type="button" id="period" value="." onclick="enterValue(this)"></td>
+				<td><input type="button" id="divide" value="/" onclick="operator(this)"></td>
+			</tr>
+			<tr>
+				<td colspan="3"><input type="button" id="equals" value="=" onclick="calculate()"></td>
+			</tr>
+			</tr>
+				<tr id="sincostan" style="visibility: hidden;">
+					<td><input type="button" id="SIN" value="SIN" onclick="sohcahtoa(this)"></td>
+					<td><input type="button" id="COS" value="COS" onclick="sohcahtoa(this)"></td>
+					<td><input type="button" id="TAN" value="TAN" onclick="sohcahtoa(this)"></td>
+				</tr>
+		</table>
+	</form>
+
+	<script type="text/javascript">
+		var input1 = 0;
+		var input2 = 0;
+		var tempValue = 0;
+		var result = 0;
+		var memory = 0;
+		var currentOp = "";
+		var screenVar = document.getElementById('T1');
+		var eqCount = 0;
+		var output = "";
+		var decCount = 0;
+
+
+		// Register input through keys
+		function keyPressed(event) {
+			if (event.keyCode==96 || event.keyCode==48) {
+				output += "0";
+			} else if (event.keyCode==97 || event.keyCode==49) {
+				output += "1";
+			} else if (event.keyCode==98 || event.keyCode==50) {
+				output += "2";
+			} else if (event.keyCode==99 || event.keyCode==51) {
+				output += "3";
+			} else if (event.keyCode==100 || event.keyCode==52) {
+				output += "4";
+			} else if (event.keyCode==101 || event.keyCode==53) {
+				output += "5";
+			} else if (event.keyCode==102 || event.keyCode==54) {
+				output += "6";
+			} else if (event.keyCode==103 || event.keyCode==55) {
+				output += "7";
+			} else if (event.keyCode==104 || event.keyCode==56) {
+				output += "8";
+			} else if (event.keyCode==105 || event.keyCode==57) {
+				output += "9";
+			} else {
+				return false;
+			}
+			updateScreen(output);
+			output = "";
+		}
+
+
+		// Enter number value
+		function enterValue(obj) {
+			eqCount = 0;
+			switch (obj.id) {
+				case "nine": 
+					output += "9"; 
+					break;
+				case "eight": 
+					output += "8"; 
+					break;
+				case "seven": 
+					output += "7"; 
+					break;
+				case "six": 
+					output += "6"; 
+					break;
+				case "five": 
+					output += "5"; 
+					break;
+				case "four": 
+					output += "4"; 
+					break;
+				case "three": 
+					output += "3"; 
+					break;
+				case "two": 
+					output += "2"; 
+					break;
+				case "one": 
+					output += "1"; 
+					break;
+				case "zero": 
+					output += "0"; 
+					break;
+				case "period":
+					if (decCount>=1) {
+						break;
+					} else {
+						output += ".";
+						decCount++;
+					}
+					break;
+			}
+			// Update the screen
+			updateScreen(output);
+			output = "";
+		}
+
+		function operator(obj) {
+			eqCount = 0;
+			decCount = 0;
+			input1 += parseFloat(screenVar.value);
+
+			switch (obj.id) {
+				case "add":
+					screenVar.value = "";
+					currentOp = "+";
+					break;
+				case "subtract":
+					screenVar.value = "";
+					currentOp = "-";
+					break;
+				case "divide": 
+					screenVar.value = "";
+					currentOp = "/";
+					break;
+				case "multiply": 
+					screenVar.value = "";
+					currentOp = "x";
+					break;
+				}
+		}
+
+		function calculate(){
+			eqCount++;
+			decCount = 0;
+
+
+			// if equals is pressed once
+			if (eqCount<=1) {
+				input2 = parseFloat(screenVar.value);
+				result = input1;
+
+				switch (currentOp) {  
+					case "+":
+						result += input2;
+						break;
+					case "-":
+						result -= input2;
+						break;
+					case "/":
+						result /= input2;
+						break;
+					case "x":
+						result *= input2;
+						break;
+				}
+				change();
+				screenVar.value = result;
+			}
+			// if equals is pressed multiple times  
+			else if (eqCount>1) {
+				switch (currentOp) {  
+					case "+":
+						result += input2;
+						break;
+					case "-":
+						result -= input2;
+						break;
+					case "/":
+						result /= input2;
+						break;
+					case "x":
+						result *= input2;
+						break;
+				}
+				change();
+				screenVar.value = result;
+			}
+		}
+
+		// store current screen value in memory
+		function memStore(){
+			memory = parseFloat(screenVar.value);
+			screenVar.value = "";
+		}
+
+		// clear, add, and subtract memory value
+		function memManiuplation(obj){
+			switch (obj.id) {
+				case "mC":
+					memory = 0;
+					screenVar.value = "";
+					break;
+				case "m+":
+					screenVar.value = memory + parseFloat(screenVar.value);
+					break;
+				case "m-":
+					memory -= parseFloat(screenVar.value);
+					screenVar.value = memory - parseFloat(screenVar.value);
+					break;
+			}
+		}
+
+		// SIN COS TAN method
+		function sohcahtoa(obj) {
+			eqCount = 0;
+			tempValue = parseFloat(screenVar.value);
+			if (obj.id === "SIN"){
+				screenVar.value = Math.sin(tempValue);
+			} else if (obj.id === "COS"){
+				screenVar.value = Math.cos(tempValue);
+			} else if (obj.id === "TAN"){
+				screenVar.value = Math.tan(tempValue);
+			}
+			input2 = parseFloat(screenVar.value);
+			tempValue = 0;
+		}
+
+
+		function updateScreen(output) {
+			screenVar.value += output;
+		}
+
+		// clear and reset values
+		function clearScreen(){
+			screenVar.value = "";
+			document.getElementById('T2').value = "";
+			input1 = 0;
+			input2 = 0;
+			result = 0;
+			decCount = 0;
+			eqCount = 0;
+			currentOp = "";
+		}
+
+		// toggle between scientific and standard
+		function toggleVersion(obj){
+			var x = document.getElementById('sincostan');
+
+			if (obj === "Standard") {
+					x.style.visibility = "hidden";
+					document.getElementById('toggle').value = "Scientific";
+			} else if (obj === "Scientific") {
+				x.style.visibility = "visible";
+				document.getElementById('toggle').value = "Standard";
+			}
+		}
+
+		// change numbers to words (limit: 9999)
+		function change() {
+			var zeroToNine = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+			var tens = ["Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+			var teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+			var outputString = "";
+			var input = String(result);
+
+			if(input === "0"){
+				output = "Zero";
+			}
+
+			// Start of decimals to words... ran out of time
+			for (var i = 0; i < input.length; i++) {
+				if (input.charAt(i)===".") {
+					containsDec = true;
+				}
+			}
+
+			switch (input.length){
+			case 4:
+				outputString += zeroToNine[parseFloat(input.substring(0,1))-1]+" thousand ";
+			case 3:
+				if(input.substring(input.length-3,input.length-2)>0){
+					outputString += zeroToNine[parseFloat(input.substring(input.length-3,input.length-2))-1]+" hundred ";
+				}
+				if (input.substring(input.length-2) !== 00) {
+					outputString += "and ";
+				}
+			case 2:
+
+				if(input.substring(input.length-2,input.length-1)>1){
+					outputString += tens[parseFloat(input.substring(input.length-2,input.length-1))-2] + " ";
+				} else if (input.substring(input.length-2,input.length-1)==1) {
+					outputString += teens[input.substring(input.length-1,input.length)];
+					break;
+				}
+			case 1:
+
+				if(input.substring(input.length-1,input.length)>0){
+					outputString += zeroToNine[input.substring(input.length-1,input.length)-1];
+				} 	
+			}
+
+		document.getElementById('T2').value = outputString;
+		}
+	</script>
+</body>
+</html>
